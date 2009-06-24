@@ -1,0 +1,15 @@
+package tetris{
+
+public class GameModel {
+
+    public var board : Board;
+    public var block : Block;
+    public var score : int;
+
+
+    
+}
+
+
+
+}

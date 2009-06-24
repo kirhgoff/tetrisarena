@@ -1,0 +1,135 @@
+<?xml version="1.0"?>
+<!-- mxml\HellowWorld.mxml -->
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" applicationComplete="doInit()"  frameRate="60">
+    <mx:Script><![CDATA[
+        import flash.events.Event;
+        import mx.core.mx_internal;
+        import mx.controls.Alert;
+        import flash.utils.Timer;
+        import flash.events.TimerEvent;
+        import flash.events.KeyboardEvent;
+        import flash.events.Event;
+        import tetris.Block;
+        import tetris.Board;
+        import tetris.GameModel;
+        import tetris.GameMaster;
+        import tetris.PlayerControls;
+        import tetris.GamePainter;
+
+        internal var gameModel      : GameModel      = new GameModel();
+        internal var gameMaster     : GameMaster     = new GameMaster();
+        internal var gamePainter    : GamePainter    = new GamePainter();
+        internal var opponentGamePainter    : GamePainter    = new GamePainter();
+        internal var playerControls : PlayerControls = new PlayerControls();
+
+        //internal var blockSize  : int = 10;
+        internal var frameNo    : int =  0;
+        internal var gameStarted: Boolean = false;
+        internal var gamePaused : Boolean = false;
+
+        public function gameIteration(event : Event) : void{
+            if(!gameStarted) return;
+            if(gamePaused)   return;
+            frameNo++;
+
+            gameMaster.doGameMasterActions(frameNo);
+            if(gameMaster.gameOver){
+                gameStarted = false;
+                Alert.show("Game Over!!!");
+            }
+        }
+
+
+        public function onKeyDown(event : KeyboardEvent) : void {
+            if(gamePaused && event.keyCode != 80 && event.keyCode != 68) return;
+
+            if(event.keyCode == 13) {
+                newGame();
+                return;
+            }
+            if(!gameStarted) return; //like we dont want to process errros?
+
+            if(event.keyCode == 37) {
+                playerControls.tryMoveLeft(gameModel.block,  gameModel.board);
+
+            } else
+            if(event.keyCode == 39){
+                playerControls.tryMoveRight(gameModel.block, gameModel.board);
+            } else
+            if(event.keyCode == 38){
+                playerControls.tryRotate(-1, gameModel.block, gameModel.board);
+            } else
+            if(event.keyCode == 40){
+                playerControls.tryRotate(1, gameModel.block, gameModel.board);
+            } else
+            if(event.keyCode == 32){
+                if(!gameMaster.moveDownCollision()){
+                  gameModel.block.yPos++;
+                }    
+            } else
+            if(event.keyCode == 68){
+                gamePainter.debugMode = ! gamePainter.debugMode;
+                gamePainter.drawBoard(gameModel.board);
+                opponentGamePainter.drawBoard(gameModel.board);
+            } else
+            if(event.keyCode == 80){
+               if(gamePaused) gamePaused = false;
+               else           gamePaused = true;
+            }
+
+            gamePainter.drawBlock(gameModel.block);
+            //Alert.show(new String(event.keyCode));
+        }
+
+        public  function doInit() : void{
+            gameModel.board = new Board(16,  24);
+            gameMaster.gameModel   = gameModel;
+            gameMaster.gamePainter = gamePainter;
+            gameMaster.opponentGamePainter = opponentGamePainter;
+            
+            gamePainter.boardGraphics = gameBoard.graphics;
+            gamePainter.blockGraphics = block.graphics;
+            gamePainter.scoreLabel    = scoreLabel;
+            gamePainter.drawBoard(gameModel.board);
+
+            opponentGamePainter.boardGraphics = opponentGameBoard.graphics;
+            opponentGamePainter.drawBoard(gameModel.board);
+
+
+            //main scena? Flex main object?
+            stage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
+            stage.addEventListener(Event.ENTER_FRAME, gameIteration);
+        }
+
+        public function newGame() : void {
+            gameModel.block = Block.newBlock();
+            gameModel.board.clear();
+            gameModel.score = 0;
+            gamePainter.drawScore(gameModel.score);
+            
+            gameMaster.gameOver = false;
+            gamePainter.drawBoard(gameModel.board);
+            gameStarted = true;
+
+        }
+    ]]></mx:Script>
+
+   <mx:HBox>
+    <mx:VBox x="0" y="0" width="100%">
+      <mx:Canvas x="0" y="0" width="100%" height="480">
+        <mx:Canvas id="gameBoard" y="0" x="0"/>
+        <mx:Canvas id="block"     y="0" x="0"/>
+      </mx:Canvas>
+      <mx:HBox>
+          <mx:Label id="scoreLabel" text="Score: 0"/>
+          <mx:Label text="v. 1.0.12 (2008-12-29) - By Jakob Jenkov - jenkov.com"/>
+      </mx:HBox>
+    </mx:VBox>
+    <mx:Canvas x="0" y="0" width="100%" height="480">
+     <mx:Canvas id="opponentGameBoard" y="0" x="0"/>
+    </mx:Canvas>
+   </mx:HBox>
+</mx:Application>
+
+
+        
