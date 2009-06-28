@@ -1,7 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="src-3rdparty"/>
 	<classpathentry kind="con" path="com.google.appengine.eclipse.core.GAE_CONTAINER"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="lib/junit-4.6.jar"/>
+	<classpathentry kind="lib" path="lib/asm-2.2.3.jar"/>
+	<classpathentry kind="lib" path="lib/asm-attrs-2.2.3.jar"/>
+	<classpathentry kind="lib" path="lib/asm-commons-2.2.3.jar"/>
+	<classpathentry kind="lib" path="lib/json-0.17.jar"/>
 	<classpathentry kind="output" path="war/WEB-INF/classes"/>
 </classpath>
